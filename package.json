@@ -1,5 +1,4 @@
 {
-  "name": "vulpine",
   "version": "0.0.0",
   "private": true,
   "description": "vulpine JavaScript Framework",
@@ -12,6 +11,12 @@
   ],
   "scripts": {
     "docs": "npm start --prefix projects/docs",
-    "app": "npm start --prefix projects/test"
+    "app": "npm start --prefix projects/test",
+    "build": "npm run build -w vulpine",
+    "dev-publish": "npm publish -w vulpine --userconfig .npmrc.dev"
+  },
+  "devDependencies": {
+    "copyfiles": "^2.4.1",
+    "typescript": "^5.9.3"
   }
 }

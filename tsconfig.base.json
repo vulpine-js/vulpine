@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2019",
+    "declaration": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+}

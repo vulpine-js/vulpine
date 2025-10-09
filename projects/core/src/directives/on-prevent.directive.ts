@@ -1,0 +1,18 @@
+import { DirectiveInterface } from "../interfaces/directive.interface"
+import { addEventListener } from "../utils/add-event-listener";
+import { directive } from "./directive";
+
+export const onPreventDirective = (element: Element, directives: DirectiveInterface[]) => {
+  let events: Record<string, ((event: Event) => void)[]> = {};
+  for (let i = 0; i < directives.length; i++) {
+    const dir = directives[i];
+    if (!events[dir.name]) {
+      events[dir.name] = [];
+    }
+    events[dir.name].push(dir.valueCaller);
+  }
+  addEventListener(element, events);
+  return element;
+};
+
+directive(onPreventDirective, 'on-prevent');

@@ -1,0 +1,10 @@
+import { listRendering } from "../utils/list-rendering";
+export declare const Θt: (text: string) => Text;
+export declare const Θe: (type: string, attributes?: Record<string, string>, children?: (Element | Text)[]) => HTMLElement;
+export declare const Θbt: (componentInstance: any, valueCaller: () => any) => Text;
+export declare const Θc: (componentInstance: any, fnComponent: import("../types/fn-component.type").FnComponentType, props?: Record<string, import("../index").StateInterface>) => HTMLElement;
+export declare const Θd: (componentInstance: any, element: Element, directives: import("../interfaces/directive.interface").DirectiveInterface[]) => Element;
+export declare const Θba: (componentInstance: any, element: Element, attributes: Record<string, () => any>) => Element;
+export declare const Θif: (componentInstance: any, elementCaller: () => Element, valueCaller: () => any) => DocumentFragment;
+export declare const Θfor: typeof listRendering;
+export declare const Θr: (componentInstance: any, fnComponent: import("../types/fn-component.type").FnComponentType, props?: Record<string, () => any>) => DocumentFragment;
