@@ -1,0 +1,99 @@
+{
+  "Core Framework Architecture": [
+    "[done] Ability to define reusable UI components",
+    "Lifecycle hooks (mounted, updated, destroyed)",
+    "[done] Scoped state for each component",
+    "[done] One-way or two-way binding between state and DOM",
+    "[done] Change detection system (automatic updates when state changes)",
+    "[not needed] Virtual DOM (optional but popular)",
+    "[not needed] Efficient diffing algorithm for updates",
+    "Support for JSX or template syntax"
+  ],
+  "State Management": [
+    "[done] Local State — per component",
+    "[done] Global/Shared State — context API or store",
+    "[done] Computed Properties & Watchers — derived state and reactive effects"
+  ],
+  "Routing": [
+    "[done]Declarative routing system",
+    "[done]Dynamic route matching (/users/:id)",
+    "[done]Nested routes",
+    "Navigation guards"
+  ],
+  "Events & Communication": [
+    "[done]Built-in event emitter or Pub/Sub",
+    "[done]Custom events for components",
+    "[done]Props down, events up communication"
+  ],
+  "DOM Utilities": [
+    "[not needed]Virtual DOM or direct DOM manipulation",
+    "[done]DOM reference",
+    "[done]Query selectors scoped to components",
+    "[done]Helper functions (class toggling, style binding)"
+  ],
+  "CLI / Tooling": [
+    "Scaffolding Tool (like create-react-app or ng new)",
+    "Dev Server with Hot Reloading",
+    "Build System Integration (Vite, Rollup, Webpack)",
+    "Plugin System for extensions"
+  ],
+  "Styling & Theming": [
+    "Scoped styles for components",
+    "CSS-in-JS or integrated CSS modules",
+    "Theming support (light/dark mode, variables)"
+  ],
+  "Testing Utilities": [
+    "Unit testing utilities for components",
+    "Mocking and snapshot testing support",
+    "End-to-end testing setup"
+  ],
+  "Performance": [
+    "Lazy loading for routes/components",
+    "[not needed]Memoization of expensive computations",
+    "Efficient DOM updates"
+  ],
+  "Server-Side Rendering & Hydration": [
+    "Render components on the server",
+    "Rehydrate on client for faster initial load"
+  ],
+  "Error Handling & Debugging": [
+    "Global error boundary system",
+    "Dev tools (like React DevTools or Vue DevTools)",
+    "Warnings in development mode"
+  ],
+  "Internationalization": [
+    "Built-in i18n API",
+    "Language switchers"
+  ],
+  "Accessibility": [
+    "ARIA attributes integration",
+    "Focus management helpers"
+  ],
+  "Documentation & Community": [
+    "Built-in docs site template",
+    "API reference generator",
+    "Examples & starter templates"
+  ],
+  "Plugins & Extensibility": [
+    "Plugin system or middleware architecture",
+    "Hooks for build-time and runtime customization"
+  ],
+  "Backward Compatibility / Polyfills": [
+    "Provide shims for older browsers if needed",
+    "Graceful degradation"
+  ],
+  "Miscellaneous Nice-to-Haves": [
+    "Built-in animation utilities",
+    "[done]Form handling helpers",
+    "[for later]Data fetching utilities",
+    "Environment configuration support"
+  ],
+  "Absolute Minimum to Start": [
+    "Component system",
+    "Reactive data binding",
+    "Basic routing",
+    "State management (local + global)",
+    "CLI tool for scaffolding",
+    "[done]Dev server with hot reload"
+  ]
+}

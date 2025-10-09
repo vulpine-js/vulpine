@@ -1,0 +1,17 @@
+{
+  "name": "vulpine",
+  "version": "0.0.0",
+  "private": true,
+  "description": "vulpine JavaScript Framework",
+  "license": "MIT",
+  "author": "Darius A. Bualan Jr.",
+  "type": "commonjs",
+  "main": "index.js",
+  "workspaces": [
+    "projects/*"
+  ],
+  "scripts": {
+    "docs": "npm start --prefix projects/docs",
+    "app": "npm start --prefix projects/test"
+  }
+}
