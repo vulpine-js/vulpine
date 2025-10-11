@@ -17,6 +17,10 @@ const define = (fn) => {
             this.childComponents = [];
             this.metaData = {};
             this.initialChangeDetectionDone = false;
+            /**
+             * Observed attributes =================================================
+             */
+            this.observedAttrs = [];
             this.applyDefaultDirectives();
             this.element = fn.bind(this)(props);
         }
@@ -30,6 +34,35 @@ const define = (fn) => {
         disconnectedCallback() {
             this.disconnected();
         }
+        addObservedAttr(name, callback, transformer) {
+            this.observedAttrs.push({
+                name,
+                callback,
+                transformer
+            });
+        }
+        static get observedAttributes() {
+            return fn.observedAttrs || [];
+        }
+        attributeChangedCallback(attrName, oldValue, newValue) {
+            if (!this.observedAttrs.length)
+                return;
+            for (let i = 0; i < this.observedAttrs.length; i++) {
+                const { name, callback, transformer } = this.observedAttrs[i];
+                if (name === attrName || name === null) {
+                    let newValueHolder = newValue;
+                    let oldValueHolder = oldValue;
+                    if (transformer) {
+                        newValueHolder = newValueHolder ? transformer(newValueHolder) : newValueHolder;
+                        oldValueHolder = oldValueHolder ? transformer(oldValueHolder) : oldValueHolder;
+                    }
+                    callback(newValueHolder, oldValueHolder);
+                }
+            }
+        }
+        /**
+         * [end] Observed attributes =================================================
+         */
         getMetaData(key) {
             return this.metaData[key];
         }

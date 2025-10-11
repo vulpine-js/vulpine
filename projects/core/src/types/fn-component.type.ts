@@ -6,6 +6,7 @@ interface FnComponentIncompleteInterface extends FnComponentIncompleteType {
   selector?: string;
   defined?: boolean;
   directives?: FnDirectiveType[];
+  observedAttrs?: string[];
 }
 
 export type FnComponentType = FnComponentIncompleteInterface;

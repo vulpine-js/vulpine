@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createRouter = exports.define = exports.component = exports.state = exports.createSharedState = exports.createStore = exports.watch = exports.createEventEmitter = exports.createCustomEvent = exports.directives = exports.classDirective = exports.styleDirective = exports.formGroup = exports.formDirective = exports.Route = void 0;
+exports.createRouter = exports.define = exports.component = exports.state = exports.createSharedState = exports.createStore = exports.watch = exports.createEventEmitter = exports.createCustomEvent = exports.directives = exports.classDirective = exports.styleDirective = exports.formGroup = exports.formDirective = exports.Route = exports.observedAttributes = exports.attributeObserver = void 0;
+var attribute_observer_1 = require("./observed-attributes/attribute-observer");
+Object.defineProperty(exports, "attributeObserver", { enumerable: true, get: function () { return attribute_observer_1.attributeObserver; } });
+var observed_attributes_1 = require("./observed-attributes/observed-attributes");
+Object.defineProperty(exports, "observedAttributes", { enumerable: true, get: function () { return observed_attributes_1.observedAttributes; } });
 var route_1 = require("./utils/route");
 Object.defineProperty(exports, "Route", { enumerable: true, get: function () { return route_1.Route; } });
 var form_directive_1 = require("./directives/form.directive");

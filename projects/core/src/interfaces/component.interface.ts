@@ -6,6 +6,7 @@ export interface ComponentInterface extends HTMLElement {
   addChild: (component: ComponentInterface) => void;
   detectChanges: () => void;
   addConnectedHook: (callback: () => void) => void;
+  addObservedAttr: (name: string | null, callback: (newVal: any, oldVal: any) => void, transformer: ((value: string) => any) | null) => void;
   addDisconnectedHook: (callback: () => void) => void;
   getDirective: (namespace: string) => FnDirectiveType | undefined;
   runWatcher: (watcher: WatcherInterface) => void;

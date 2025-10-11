@@ -40,6 +40,50 @@ export const define = (fn: FnComponentType) => {
       this.disconnected();
     }
 
+
+    /**
+     * Observed attributes =================================================
+     */
+    private observedAttrs: {
+      name: string | null,
+      callback: (newVal: any, oldVal: any) => void,
+      transformer: ((value: any) => any) | null
+    }[] = [];
+
+    public addObservedAttr(name: string | null, callback: (newVal: any, oldVal: any) => void, transformer: ((value: string) => any) | null) {
+      this.observedAttrs.push({
+        name,
+        callback,
+        transformer
+      });
+    }
+
+    static get observedAttributes() {
+      return fn.observedAttrs || [];
+    }
+
+    attributeChangedCallback(attrName: string, oldValue: string, newValue: string) {
+      if (!this.observedAttrs.length) return;
+
+      for (let i = 0; i < this.observedAttrs.length; i++) {
+        const { name, callback, transformer } = this.observedAttrs[i];
+        if (name === attrName || name === null) {
+          let newValueHolder = newValue;
+          let oldValueHolder = oldValue;
+
+          if (transformer) {
+            newValueHolder = newValueHolder ? transformer(newValueHolder) : newValueHolder;
+            oldValueHolder = oldValueHolder ? transformer(oldValueHolder) : oldValueHolder;
+          }
+          callback(newValueHolder, oldValueHolder);
+        }
+      }
+    }
+    /**
+     * [end] Observed attributes =================================================
+     */
+
+
     public getMetaData(key: string) {
       return this.metaData[key];
     }

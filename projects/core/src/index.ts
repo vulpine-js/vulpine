@@ -1,3 +1,6 @@
+export { attributeObserver } from './observed-attributes/attribute-observer';
+export { observedAttributes } from './observed-attributes/observed-attributes';
+
 export { Route } from './utils/route';
 export { formDirective } from './directives/form.directive';
 export { formGroup } from './utils/form-group';
