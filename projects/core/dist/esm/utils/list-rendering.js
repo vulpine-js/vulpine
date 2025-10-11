@@ -57,7 +57,7 @@ export function listRendering(classComponent, elementCreator, valueCaller, track
     };
     fragment.appendChild(comment);
     instance.addWatcher(watcher, true);
-    if (instance.initialChangeDetectionDone) {
+    if (instance.initialChangeDetectionDone || instance.initialChangeDetectionRunning) {
         instance.runWatcher(watcher);
     }
     return fragment;

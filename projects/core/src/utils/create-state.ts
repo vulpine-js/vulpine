@@ -1,7 +1,7 @@
 import { ComponentInterface } from "../interfaces/component.interface";
 import { StateInterface } from "../interfaces/state.interface";
 
-export const state = <T = any>(componentInstance: any, value: T): StateInterface<T> => {
+export const createState = <T = any>(componentInstance: any, value: T): StateInterface<T> => {
   const component = componentInstance as ComponentInterface;
   const state = {};
   let savedValue: any = value;

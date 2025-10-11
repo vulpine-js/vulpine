@@ -1,8 +1,9 @@
 /**
  * Observed attributes ============================================
  */
-export { attributeObserver } from './observed-attributes/attribute-observer';
-export { observedAttributes } from './observed-attributes/observed-attributes';
+export { attrObserver } from './observed-attributes/attr-observer';
+export { observedAttrs } from './observed-attributes/observed-attrs';
+export { attrsObserver } from './observed-attributes/attrs-observer';
 /**
  * [end] Observed attributes ======================================
  */
@@ -25,7 +26,7 @@ export { createEventEmitter } from './utils/create-event-emitter';
 export { watch } from './utils/watch';
 export { createStore } from './utils/store';
 export { createSharedState } from './utils/create-shared-state';
-export { state } from './utils/state';
+export { createState } from './utils/create-state';
 export { component } from './utils/component';
 export { define } from './utils/define';
 export { StateInterface } from './interfaces/state.interface';

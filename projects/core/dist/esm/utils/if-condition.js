@@ -22,7 +22,7 @@ export const ifCondition = (componentInstance, elementCaller, valueCaller) => {
         },
     };
     component.addWatcher(watcher, true);
-    if (component.initialChangeDetectionDone) {
+    if (component.initialChangeDetectionDone || component.initialChangeDetectionRunning) {
         component.runWatcher(watcher);
     }
     return fragment;

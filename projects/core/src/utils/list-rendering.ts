@@ -75,7 +75,7 @@ export function listRendering(
 
   instance.addWatcher(watcher, true);
 
-  if (instance.initialChangeDetectionDone) {
+  if (instance.initialChangeDetectionDone || instance.initialChangeDetectionRunning) {
     instance.runWatcher(watcher);
   }
 

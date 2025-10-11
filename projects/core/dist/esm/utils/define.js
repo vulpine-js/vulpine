@@ -13,6 +13,7 @@ export const define = (fn) => {
             this.disconnectedHooks = [];
             this.childComponents = [];
             this.metaData = {};
+            this.initialChangeDetectionRunning = false;
             this.initialChangeDetectionDone = false;
             /**
              * Observed attributes =================================================
@@ -24,7 +25,9 @@ export const define = (fn) => {
         connectedCallback() {
             this.connected();
             this.appendChild(this.element);
+            this.initialChangeDetectionRunning = true;
             this.runDetectChanges();
+            this.initialChangeDetectionRunning = false;
             this.initialChangeDetectionDone = true;
             this.afterViewInit();
         }
@@ -38,6 +41,13 @@ export const define = (fn) => {
                 transformer
             });
         }
+        addObservedAttrAll(callback) {
+            this.observedAttrs.push({
+                name: null,
+                callbackAll: callback,
+                transformer: null
+            });
+        }
         static get observedAttributes() {
             return fn.observedAttrs || [];
         }
@@ -45,7 +55,7 @@ export const define = (fn) => {
             if (!this.observedAttrs.length)
                 return;
             for (let i = 0; i < this.observedAttrs.length; i++) {
-                const { name, callback, transformer } = this.observedAttrs[i];
+                const { name, callback, callbackAll, transformer } = this.observedAttrs[i];
                 if (name === attrName || name === null) {
                     let newValueHolder = newValue;
                     let oldValueHolder = oldValue;
@@ -53,7 +63,12 @@ export const define = (fn) => {
                         newValueHolder = newValueHolder ? transformer(newValueHolder) : newValueHolder;
                         oldValueHolder = oldValueHolder ? transformer(oldValueHolder) : oldValueHolder;
                     }
-                    callback(newValueHolder, oldValueHolder);
+                    if (callback) {
+                        callback(newValueHolder, oldValueHolder);
+                    }
+                    else if (callbackAll) {
+                        callbackAll(attrName, newValueHolder, oldValueHolder);
+                    }
                 }
             }
         }
@@ -126,7 +141,7 @@ export const define = (fn) => {
             }
         }
         runDetectChanges() {
-            [...this.conditionalWatchers].forEach(watcher => this.runWatcher(watcher));
+            [...this.conditionalWatchers].reverse().forEach(watcher => this.runWatcher(watcher));
             this.watchers.forEach(watcher => this.runWatcher(watcher));
             this.childComponents.forEach(child => child.detectChanges());
             this.childComponents = this.childComponents.filter(child => child.isConnected);

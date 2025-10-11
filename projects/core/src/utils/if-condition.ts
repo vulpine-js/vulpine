@@ -26,7 +26,7 @@ export const ifCondition = (componentInstance: any, elementCaller: () => Element
 
   component.addWatcher(watcher, true);
 
-  if (component.initialChangeDetectionDone) {
+  if (component.initialChangeDetectionDone || component.initialChangeDetectionRunning) {
     component.runWatcher(watcher)
   }
 

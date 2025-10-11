@@ -6,6 +6,7 @@ export interface ComponentInterface extends HTMLElement {
     detectChanges: () => void;
     addConnectedHook: (callback: () => void) => void;
     addObservedAttr: (name: string | null, callback: (newVal: any, oldVal: any) => void, transformer: ((value: string) => any) | null) => void;
+    addObservedAttrAll: (callback: (attrName: string, newVal: any, oldVal: any) => void) => void;
     addDisconnectedHook: (callback: () => void) => void;
     getDirective: (namespace: string) => FnDirectiveType | undefined;
     runWatcher: (watcher: WatcherInterface) => void;
@@ -13,4 +14,5 @@ export interface ComponentInterface extends HTMLElement {
     getMetaData: (key: string) => any;
     isConnected: boolean;
     initialChangeDetectionDone: boolean;
+    initialChangeDetectionRunning: boolean;
 }

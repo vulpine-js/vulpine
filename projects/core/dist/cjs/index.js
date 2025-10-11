@@ -1,13 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.define = exports.component = exports.state = exports.createSharedState = exports.createStore = exports.watch = exports.createEventEmitter = exports.createCustomEvent = exports.directives = exports.classDirective = exports.styleDirective = exports.formGroup = exports.formDirective = exports.createRouter = exports.routerDirective = exports.Route = exports.observedAttributes = exports.attributeObserver = void 0;
+exports.define = exports.component = exports.createState = exports.createSharedState = exports.createStore = exports.watch = exports.createEventEmitter = exports.createCustomEvent = exports.directives = exports.classDirective = exports.styleDirective = exports.formGroup = exports.formDirective = exports.createRouter = exports.routerDirective = exports.Route = exports.attrsObserver = exports.observedAttrs = exports.attrObserver = void 0;
 /**
  * Observed attributes ============================================
  */
-var attribute_observer_1 = require("./observed-attributes/attribute-observer");
-Object.defineProperty(exports, "attributeObserver", { enumerable: true, get: function () { return attribute_observer_1.attributeObserver; } });
-var observed_attributes_1 = require("./observed-attributes/observed-attributes");
-Object.defineProperty(exports, "observedAttributes", { enumerable: true, get: function () { return observed_attributes_1.observedAttributes; } });
+var attr_observer_1 = require("./observed-attributes/attr-observer");
+Object.defineProperty(exports, "attrObserver", { enumerable: true, get: function () { return attr_observer_1.attrObserver; } });
+var observed_attrs_1 = require("./observed-attributes/observed-attrs");
+Object.defineProperty(exports, "observedAttrs", { enumerable: true, get: function () { return observed_attrs_1.observedAttrs; } });
+var attrs_observer_1 = require("./observed-attributes/attrs-observer");
+Object.defineProperty(exports, "attrsObserver", { enumerable: true, get: function () { return attrs_observer_1.attrsObserver; } });
 /**
  * [end] Observed attributes ======================================
  */
@@ -43,8 +45,8 @@ var store_1 = require("./utils/store");
 Object.defineProperty(exports, "createStore", { enumerable: true, get: function () { return store_1.createStore; } });
 var create_shared_state_1 = require("./utils/create-shared-state");
 Object.defineProperty(exports, "createSharedState", { enumerable: true, get: function () { return create_shared_state_1.createSharedState; } });
-var state_1 = require("./utils/state");
-Object.defineProperty(exports, "state", { enumerable: true, get: function () { return state_1.state; } });
+var create_state_1 = require("./utils/create-state");
+Object.defineProperty(exports, "createState", { enumerable: true, get: function () { return create_state_1.createState; } });
 var component_1 = require("./utils/component");
 Object.defineProperty(exports, "component", { enumerable: true, get: function () { return component_1.component; } });
 var define_1 = require("./utils/define");

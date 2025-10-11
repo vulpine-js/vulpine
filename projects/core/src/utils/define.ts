@@ -19,6 +19,7 @@ export const define = (fn: FnComponentType) => {
     private childComponents: ComponentInterface[] = [];
     private readonly element: HTMLElement;
     private metaData: Record<string, any> = {};
+    public initialChangeDetectionRunning: boolean = false;
     public initialChangeDetectionDone: boolean = false;
 
     constructor(props: Record<string, StateInterface>) {
@@ -31,7 +32,9 @@ export const define = (fn: FnComponentType) => {
     connectedCallback() {
       this.connected();
       this.appendChild(this.element);
+      this.initialChangeDetectionRunning = true;
       this.runDetectChanges();
+      this.initialChangeDetectionRunning = false;
       this.initialChangeDetectionDone = true;
       this.afterViewInit();
     }
@@ -46,8 +49,9 @@ export const define = (fn: FnComponentType) => {
      */
     private observedAttrs: {
       name: string | null,
-      callback: (newVal: any, oldVal: any) => void,
-      transformer: ((value: any) => any) | null
+      callback?: (newVal: any, oldVal: any) => void,
+      callbackAll?: (attrName: string, newVal: any, oldVal: any) => void,
+      transformer?: ((value: any) => any) | null
     }[] = [];
 
     public addObservedAttr(name: string | null, callback: (newVal: any, oldVal: any) => void, transformer: ((value: string) => any) | null) {
@@ -55,6 +59,14 @@ export const define = (fn: FnComponentType) => {
         name,
         callback,
         transformer
+      });
+    }
+
+    public addObservedAttrAll(callback: (attrName: string, newVal: any, oldVal: any) => void) {
+      this.observedAttrs.push({
+        name: null,
+        callbackAll: callback,
+        transformer: null
       });
     }
 
@@ -66,7 +78,7 @@ export const define = (fn: FnComponentType) => {
       if (!this.observedAttrs.length) return;
 
       for (let i = 0; i < this.observedAttrs.length; i++) {
-        const { name, callback, transformer } = this.observedAttrs[i];
+        const { name, callback, callbackAll, transformer } = this.observedAttrs[i];
         if (name === attrName || name === null) {
           let newValueHolder = newValue;
           let oldValueHolder = oldValue;
@@ -75,7 +87,12 @@ export const define = (fn: FnComponentType) => {
             newValueHolder = newValueHolder ? transformer(newValueHolder) : newValueHolder;
             oldValueHolder = oldValueHolder ? transformer(oldValueHolder) : oldValueHolder;
           }
-          callback(newValueHolder, oldValueHolder);
+
+          if (callback) {
+            callback(newValueHolder, oldValueHolder);
+          } else if (callbackAll) {
+            callbackAll(attrName, newValueHolder, oldValueHolder);
+          }
         }
       }
     }
@@ -167,7 +184,7 @@ export const define = (fn: FnComponentType) => {
     }
 
     private runDetectChanges() {
-      [...this.conditionalWatchers].forEach(watcher => this.runWatcher(watcher));
+      [...this.conditionalWatchers].reverse().forEach(watcher => this.runWatcher(watcher));
       this.watchers.forEach(watcher => this.runWatcher(watcher));
 
       this.childComponents.forEach(child => child.detectChanges());
