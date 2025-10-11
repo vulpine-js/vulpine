@@ -1,3 +1,2 @@
 **/node_modules/
-projects/test
-projects/cypress
+projects/core/dist

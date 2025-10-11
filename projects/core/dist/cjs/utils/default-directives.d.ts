@@ -1,1 +1,0 @@
-export declare const defaultDirectives: ((element: Element, directives: import("../interfaces/directive.interface").DirectiveInterface[], componentInstance?: import("../interfaces/component.interface").ComponentInterface) => Element)[];
