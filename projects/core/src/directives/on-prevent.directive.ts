@@ -11,7 +11,7 @@ export const onPreventDirective = (element: Element, directives: DirectiveInterf
     }
     events[dir.name].push(dir.valueCaller);
   }
-  addEventListener(element, events);
+  addEventListener(element, {}, events);
   return element;
 };
 

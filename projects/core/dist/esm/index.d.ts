@@ -1,6 +1,20 @@
+/**
+ * Observed attributes ============================================
+ */
 export { attributeObserver } from './observed-attributes/attribute-observer';
 export { observedAttributes } from './observed-attributes/observed-attributes';
+/**
+ * [end] Observed attributes ======================================
+ */
+/**
+ * Router ==========================================================
+ */
 export { Route } from './utils/route';
+export { routerDirective } from './directives/router.directive';
+export { createRouter } from './utils/create-router';
+/**
+ * [end] Router ====================================================
+ */
 export { formDirective } from './directives/form.directive';
 export { formGroup } from './utils/form-group';
 export { styleDirective } from './directives/style.directive';
@@ -14,5 +28,4 @@ export { createSharedState } from './utils/create-shared-state';
 export { state } from './utils/state';
 export { component } from './utils/component';
 export { define } from './utils/define';
-export { createRouter } from './utils/create-router';
 export { StateInterface } from './interfaces/state.interface';

@@ -23,7 +23,7 @@ export const addEventListener = (
   preventEvents: Record<string, ((event: Event) => void)[]> = {},
 ) => {
   applyEvent(element, events || {}, false);
-  applyEvent(element, preventEvents || {}, false);
+  applyEvent(element, preventEvents || {}, true);
 
   return element;
 };

@@ -12,7 +12,7 @@ const onPreventDirective = (element, directives) => {
         }
         events[dir.name].push(dir.valueCaller);
     }
-    (0, add_event_listener_1.addEventListener)(element, events);
+    (0, add_event_listener_1.addEventListener)(element, {}, events);
     return element;
 };
 exports.onPreventDirective = onPreventDirective;

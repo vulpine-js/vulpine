@@ -19,6 +19,6 @@ const applyEvent = (element, events, prevent) => {
 };
 export const addEventListener = (element, events, preventEvents = {}) => {
     applyEvent(element, events || {}, false);
-    applyEvent(element, preventEvents || {}, false);
+    applyEvent(element, preventEvents || {}, true);
     return element;
 };

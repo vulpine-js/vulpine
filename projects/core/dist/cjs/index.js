@@ -1,12 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createRouter = exports.define = exports.component = exports.state = exports.createSharedState = exports.createStore = exports.watch = exports.createEventEmitter = exports.createCustomEvent = exports.directives = exports.classDirective = exports.styleDirective = exports.formGroup = exports.formDirective = exports.Route = exports.observedAttributes = exports.attributeObserver = void 0;
+exports.define = exports.component = exports.state = exports.createSharedState = exports.createStore = exports.watch = exports.createEventEmitter = exports.createCustomEvent = exports.directives = exports.classDirective = exports.styleDirective = exports.formGroup = exports.formDirective = exports.createRouter = exports.routerDirective = exports.Route = exports.observedAttributes = exports.attributeObserver = void 0;
+/**
+ * Observed attributes ============================================
+ */
 var attribute_observer_1 = require("./observed-attributes/attribute-observer");
 Object.defineProperty(exports, "attributeObserver", { enumerable: true, get: function () { return attribute_observer_1.attributeObserver; } });
 var observed_attributes_1 = require("./observed-attributes/observed-attributes");
 Object.defineProperty(exports, "observedAttributes", { enumerable: true, get: function () { return observed_attributes_1.observedAttributes; } });
+/**
+ * [end] Observed attributes ======================================
+ */
+/**
+ * Router ==========================================================
+ */
 var route_1 = require("./utils/route");
 Object.defineProperty(exports, "Route", { enumerable: true, get: function () { return route_1.Route; } });
+var router_directive_1 = require("./directives/router.directive");
+Object.defineProperty(exports, "routerDirective", { enumerable: true, get: function () { return router_directive_1.routerDirective; } });
+var create_router_1 = require("./utils/create-router");
+Object.defineProperty(exports, "createRouter", { enumerable: true, get: function () { return create_router_1.createRouter; } });
+/**
+ * [end] Router ====================================================
+ */
 var form_directive_1 = require("./directives/form.directive");
 Object.defineProperty(exports, "formDirective", { enumerable: true, get: function () { return form_directive_1.formDirective; } });
 var form_group_1 = require("./utils/form-group");
@@ -33,5 +49,3 @@ var component_1 = require("./utils/component");
 Object.defineProperty(exports, "component", { enumerable: true, get: function () { return component_1.component; } });
 var define_1 = require("./utils/define");
 Object.defineProperty(exports, "define", { enumerable: true, get: function () { return define_1.define; } });
-var create_router_1 = require("./utils/create-router");
-Object.defineProperty(exports, "createRouter", { enumerable: true, get: function () { return create_router_1.createRouter; } });

@@ -22,7 +22,7 @@ const applyEvent = (element, events, prevent) => {
 };
 const addEventListener = (element, events, preventEvents = {}) => {
     applyEvent(element, events || {}, false);
-    applyEvent(element, preventEvents || {}, false);
+    applyEvent(element, preventEvents || {}, true);
     return element;
 };
 exports.addEventListener = addEventListener;
