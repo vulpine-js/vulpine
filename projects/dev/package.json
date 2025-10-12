@@ -1,6 +1,6 @@
 {
-  "name": "vulpine",
-  "version": "0.0.19",
+  "name": "vulpine-dev",
+  "version": "0.0.2",
   "license": "MIT",
 
   "main": "dist/cjs/index.js",
@@ -17,11 +17,16 @@
       "import": "./dist/esm/shortcuts/index.js",
       "require": "./dist/cjs/shortcuts/index.cjs",
       "types": "./dist/esm/shortcuts/index.d.ts"
+    },
+    "./ast-transformer": {
+      "import": "./dist/transformers/ast.js",
+      "require": "./dist/transformers/ast.js"
     }
   },
 
   "scripts": {
     "build": "npm run build:esm && npm run build:cjs",
+    "postbuild": "copyfiles -f \"src/transformers/*.js\" dist/transformers",
     "build:esm": "tsc -p tsconfig.esm.json",
     "build:cjs": "tsc -p tsconfig.cjs.json"
   }

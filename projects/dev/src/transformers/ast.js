@@ -109,7 +109,7 @@ module.exports = function ({ types: t }) {
           body: forLoop.value.expression
         }
       ];
-      
+
       if (forLoopTrackBy) {
         node.arguments.push(forLoopTrackBy.value.expression || forLoopTrackBy.value);
       }
@@ -136,16 +136,16 @@ module.exports = function ({ types: t }) {
   function applyFor(path) {
     const openingElement = path.node.openingElement;
     const forDirective = openingElement.attributes.find(
-      (attr) => attr.name.type === "JSXNamespacedName" && attr.name.namespace.name === 'v' && attr.name.name.name === 'for'
+      (attr) => attr.name.type === "JSXNamespacedName" && attr.name.namespace.name === "v" && attr.name.name.name === "for"
     );
     const indexDirective = openingElement.attributes.find(
-      (attr) => attr.name.type === "JSXNamespacedName" && attr.name.namespace.name === 'v' && attr.name.name.name === 'for-index'
+      (attr) => attr.name.type === "JSXNamespacedName" && attr.name.namespace.name === "v" && attr.name.name.name === "for-index"
     );
     const itemDirective = openingElement.attributes.find(
-      (attr) => attr.name.type === "JSXNamespacedName" && attr.name.namespace.name === 'v' && attr.name.name.name === 'for-item'
+      (attr) => attr.name.type === "JSXNamespacedName" && attr.name.namespace.name === "v" && attr.name.name.name === "for-item"
     );
     const trackByDirective = openingElement.attributes.find(
-      (attr) => attr.name.type === "JSXNamespacedName" && attr.name.namespace.name === 'v' && attr.name.name.name === 'for-track-by'
+      (attr) => attr.name.type === "JSXNamespacedName" && attr.name.namespace.name === "v" && attr.name.name.name === "for-track-by"
     );
     applyForCondition(path, forDirective, itemDirective, indexDirective, trackByDirective);
   }
@@ -153,7 +153,7 @@ module.exports = function ({ types: t }) {
   function applyIf(path) {
     const openingElement = path.node.openingElement;
     const directive = openingElement.attributes.find(
-      (attr) => attr.name.type === "JSXNamespacedName" && attr.name.namespace.name === 'v' && attr.name.name.name === 'if'
+      (attr) => attr.name.type === "JSXNamespacedName" && attr.name.namespace.name === "v" && attr.name.name.name === "if"
     );
 
     if (directive) {
@@ -170,30 +170,33 @@ module.exports = function ({ types: t }) {
           name: LOCAL_THIS
         },
         {
-          type: 'ArrowFunctionExpression',
+          type: "ArrowFunctionExpression",
           params: [],
-          body: originalNode,
+          body: originalNode
         },
         {
-          type: 'ArrowFunctionExpression',
+          type: "ArrowFunctionExpression",
           params: [],
-          body: directive.value.expression,
-        },
+          body: directive.value.expression
+        }
       ];
     }
   }
 
   function applyDirectives(path) {
     const openingElement = path.node.openingElement;
-    const directives = openingElement.attributes.filter(
-      (attr) => attr.name.type === "JSXNamespacedName"
-    ).filter(attr => {
-      return !(attr.name.namespace.name === 'v' && attr.name.name.name === 'if')
-        && !(attr.name.namespace.name === 'v' && attr.name.name.name === 'for')
-        && !(attr.name.namespace.name === 'v' && attr.name.name.name === 'for-index')
-        && !(attr.name.namespace.name === 'v' && attr.name.name.name === 'for-item')
-        && !(attr.name.namespace.name === 'v' && attr.name.name.name === 'for-track-by')
-    });
+    const directives = openingElement.attributes
+      .filter((attr) => attr.name.type === "JSXNamespacedName")
+      .filter((attr) => {
+        return (
+          !(attr.name.namespace.name === "v" && attr.name.name.name === "if") &&
+          !(attr.name.namespace.name === "v" && attr.name.name.name === "for") &&
+          !(attr.name.namespace.name === "v" && attr.name.name.name === "for-index") &&
+          !(attr.name.namespace.name === "v" && attr.name.name.name === "for-item") &&
+          !(attr.name.namespace.name === "v" && attr.name.name.name === "for-track-by") &&
+          attr.name.namespace.name !== "attr"
+        );
+      });
 
     if (directives.length) {
       const originalNode = { ...path.node };
@@ -210,6 +213,28 @@ module.exports = function ({ types: t }) {
         },
         originalNode,
         jsxNamespaceAttributesToObjectExpression(directives)
+      ];
+    }
+  }
+
+  function componentApplyAttributeBinding(path) {
+    const attrBindings = componentGetAttributeBindings(path);
+
+    if (attrBindings.length > 0) {
+      const originalNode = { ...path.node };
+
+      path.node.type = "CallExpression";
+      path.node.callee = {
+        type: "Identifier",
+        name: BIND_ATTRIBUTE
+      };
+      path.node.arguments = [
+        {
+          type: "Identifier",
+          name: LOCAL_THIS
+        },
+        originalNode,
+        componentJsxAttributeBindingToObjectExpression(attrBindings)
       ];
     }
   }
@@ -236,72 +261,145 @@ module.exports = function ({ types: t }) {
     }
   }
 
+  function componentGetAttributeBindings(path) {
+    const openingElement = path.node.openingElement;
+    const attrBindings = openingElement.attributes.filter((attr) => attr.name.type === "JSXNamespacedName" && attr.name.namespace.name === "attr");
+    return attrBindings;
+  }
+
   function getAttributeBindings(path) {
     const openingElement = path.node.openingElement;
     const attrBindings = openingElement.attributes.filter(
-      (attr) =>
-        attr.name.type === "JSXIdentifier" && attr.value && attr.value.type === "JSXExpressionContainer"
+      (attr) => attr.name.type === "JSXIdentifier" && attr.value && attr.value.type === "JSXExpressionContainer"
     );
     return attrBindings;
   }
 
-  function jsxAttributesToObjectExpression(path, isComponent, isRoute) {
+  function routeJsxAttributesToObjectExpression(path) {
     const openingElement = path.node.openingElement;
     const attributes = openingElement.attributes.filter(
-      (attr) =>
-        attr.name.type === "JSXIdentifier" &&
-        ((attr.value && attr.value.type === "StringLiteral") || !attr.value)
+      (attr) => attr.name.type === "JSXIdentifier" && ((attr.value && attr.value.type === "StringLiteral") || !attr.value)
     );
 
     const properties = attributes.map((attr) => {
       return {
         type: "ObjectProperty",
         key: stringToObjectKey(attr.name.name),
-        value: isRoute ? ({
-          type: 'ArrowFunctionExpression',
+        value: {
+          type: "ArrowFunctionExpression",
           params: [],
           body: attr.value
-          ? {
-              type: attr.value.type,
-              value: attr.value.value
-            }
-          : {
-              type: "StringLiteral",
-              value: ""
-            }
-        }) : (attr.value
-          ? {
-              type: attr.value.type,
-              value: attr.value.value
-            }
-          : {
-              type: "StringLiteral",
-              value: ""
-            })
+            ? {
+                type: attr.value.type,
+                value: attr.value.value
+              }
+            : {
+                type: "StringLiteral",
+                value: ""
+              }
+        }
       };
     });
 
-    if (isComponent) {
-      const attrBindings = getAttributeBindings(path);
-      if (attrBindings.length > 0) {
-        attrBindings.forEach((attr) => {
-          const binding = {
-            type: "ObjectProperty",
-            key: stringToObjectKey(attr.name.name),
-            value: isRoute ? {
-              type: 'ArrowFunctionExpression',
-              params: [],
-              body: attr.value.expression
-            } : attr.value.expression
-          };
-          properties.push(binding);
-        });
-      }
+    const attrBindings = getAttributeBindings(path);
+    if (attrBindings.length > 0) {
+      attrBindings.forEach((attr) => {
+        const binding = {
+          type: "ObjectProperty",
+          key: stringToObjectKey(attr.name.name),
+          value: {
+            type: "ArrowFunctionExpression",
+            params: [],
+            body: attr.value.expression
+          }
+        };
+        properties.push(binding);
+      });
     }
 
     return {
       type: "ObjectExpression",
       properties
+    };
+  }
+
+  function componentJsxAttributesToObjectExpression(path) {
+    const openingElement = path.node.openingElement;
+    const attributes = openingElement.attributes.filter((attr) => attr.name.type === "JSXIdentifier");
+
+    const properties = attributes.map((attr) => {
+      return {
+        type: "ObjectProperty",
+        key: stringToObjectKey(attr.name.name),
+        value: attr.value
+          ? attr.value.type === "JSXExpressionContainer"
+            ? attr.value.expression
+            : {
+                type: attr.value.type,
+                value: attr.value.value
+              }
+          : {
+              type: "StringLiteral",
+              value: ""
+            }
+      };
+    });
+
+    return {
+      type: "ObjectExpression",
+      properties
+    };
+  }
+
+  function jsxAttributesToObjectExpression(path) {
+    const openingElement = path.node.openingElement;
+    const attributes = openingElement.attributes.filter(
+      (attr) => attr.name.type === "JSXIdentifier" && ((attr.value && attr.value.type === "StringLiteral") || !attr.value)
+    );
+
+    const properties = attributes.map((attr) => {
+      return {
+        type: "ObjectProperty",
+        key: stringToObjectKey(attr.name.name),
+        value: attr.value
+          ? {
+              type: attr.value.type,
+              value: attr.value.value
+            }
+          : {
+              type: "StringLiteral",
+              value: ""
+            }
+      };
+    });
+
+    return {
+      type: "ObjectExpression",
+      properties
+    };
+  }
+
+  function componentJsxAttributeBindingToObjectExpression(attributes) {
+    return {
+      type: "ObjectExpression",
+      properties: attributes.map((attr) => {
+        return {
+          type: "ObjectProperty",
+          key: stringToObjectKey(attr.name.name.name),
+          value: {
+            type: "ArrowFunctionExpression",
+            params: [],
+            body: attr.value
+              ? attr.value.type === "StringLiteral"
+                ? attr.value
+                : attr.value.expression
+              : {
+                  type: "StringLiteral",
+                  value: ""
+                }
+          }
+        };
+      })
     };
   }
 
@@ -431,26 +529,15 @@ module.exports = function ({ types: t }) {
       },
       FunctionDeclaration(path) {
         // only do this if the function *returns JSX*
-        const hasJSX = path.node.body.body.some(
-          (stmt) =>
-            t.isReturnStatement(stmt) &&
-            (t.isJSXElement(stmt.argument) || t.isJSXFragment(stmt.argument))
-        );
+        const hasJSX = path.node.body.body.some((stmt) => t.isReturnStatement(stmt) && (t.isJSXElement(stmt.argument) || t.isJSXFragment(stmt.argument)));
 
         if (!hasJSX) return;
 
         // create `const _this_ = this;`
-        const thisVar = t.variableDeclaration("const", [
-          t.variableDeclarator(t.identifier(LOCAL_THIS), t.thisExpression())
-        ]);
+        const thisVar = t.variableDeclaration("const", [t.variableDeclarator(t.identifier(LOCAL_THIS), t.thisExpression())]);
 
         // Insert at the top of the function body if not already present
-        if (
-          !path.node.body.body.some(
-            (stmt) =>
-              t.isVariableDeclaration(stmt) && stmt.declarations.some((d) => d.id.name === LOCAL_THIS)
-          )
-        ) {
+        if (!path.node.body.body.some((stmt) => t.isVariableDeclaration(stmt) && stmt.declarations.some((d) => d.id.name === LOCAL_THIS))) {
           path.node.body.body.unshift(thisVar);
         }
       },
@@ -471,43 +558,70 @@ module.exports = function ({ types: t }) {
         const openingElement = path.node.openingElement;
         const tagName = openingElement.name.name;
         const isComponent = isFirstLetterCapitalized(tagName);
-        const isRoute = tagName === 'Route';
+        const isRoute = tagName === "Route";
 
-        path.node.type = "CallExpression";
-        path.node.callee = {
-          type: "Identifier",
-          name: isRoute ? ROUTE : (isComponent ? CREATE_COMPONENT : CREATE_ELEMENT)
-        };
-        path.node.arguments = [
-          isComponent
-            ? {
-                type: "Identifier",
-                name: tagName
-              }
-            : {
-                type: "StringLiteral",
-                value: tagName
-              },
-          jsxAttributesToObjectExpression(path, isComponent, isRoute)
-        ];
-
-        if (isComponent) {
+        if (isRoute) {
+          path.node.type = "CallExpression";
+          path.node.callee = {
+            type: "Identifier",
+            name: ROUTE
+          };
           path.node.arguments = [
             {
               type: "Identifier",
               name: LOCAL_THIS
             },
-            ...path.node.arguments
+            {
+              type: "Identifier",
+              name: tagName
+            },
+            routeJsxAttributesToObjectExpression(path)
           ];
+          return;
+        } else if (isComponent) {
+          path.node.type = "CallExpression";
+          path.node.callee = {
+            type: "Identifier",
+            name: CREATE_COMPONENT
+          };
+          path.node.arguments = [
+            {
+              type: "Identifier",
+              name: LOCAL_THIS
+            },
+            {
+              type: "Identifier",
+              name: tagName
+            },
+            componentJsxAttributesToObjectExpression(path)
+          ];
+
+          applyChildren(path);
+
+          componentApplyAttributeBinding(path);
+
+          applyDirectives(path);
+          applyIf(path);
+          applyFor(path);
+          return;
         }
 
-        if (isRoute) return;
+        path.node.type = "CallExpression";
+        path.node.callee = {
+          type: "Identifier",
+          name: CREATE_ELEMENT
+        };
+        path.node.arguments = [
+          {
+            type: "StringLiteral",
+            value: tagName
+          },
+          jsxAttributesToObjectExpression(path)
+        ];
 
         applyChildren(path);
 
-        if (!isComponent) {
-          applyAttributeBinding(path);
-        }
+        applyAttributeBinding(path);
 
         applyDirectives(path);
         applyIf(path);
@@ -515,4 +629,4 @@ module.exports = function ({ types: t }) {
       }
     }
   };
-}
+};
