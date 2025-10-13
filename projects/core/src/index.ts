@@ -1,4 +1,12 @@
 /**
+ * Custom elements ================================================
+ */
+export { customElement } from './custom-element/custom-element';
+/**
+ * [end] Custom elements ==========================================
+ */
+
+/**
  * Observed attributes ============================================
  */
 export { attrObserver } from './observed-attributes/attr-observer';

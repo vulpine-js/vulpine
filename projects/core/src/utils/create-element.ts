@@ -1,4 +1,4 @@
-function createElementByTagName(tagName: string): HTMLElement | SVGElement | MathMLElement {
+function createElementByTagName(tagName: string, is: string): HTMLElement | SVGElement | MathMLElement {
   const svgTags = new Set([
     'svg', 'circle', 'rect', 'path', 'line', 'polygon', 'polyline',
     'ellipse', 'g', 'defs', 'clipPath', 'use', 'text', 'tspan', 'foreignObject'
@@ -14,12 +14,16 @@ function createElementByTagName(tagName: string): HTMLElement | SVGElement | Mat
     return document.createElementNS('http://www.w3.org/1998/Math/MathML', tagName);
   }
 
+  if (is) {
+    return document.createElement(tagName, { is });
+  }
+
   // Default: HTML element
   return document.createElement(tagName);
 }
 
 export const createElement = (type: string, attributes: Record<string, string> = {}, children: (Element | Text)[] = []): HTMLElement => {
-  const el = createElementByTagName(type);
+  const el = createElementByTagName(type, attributes.is);
 
   for (const key in attributes) {
     if (Object.prototype.hasOwnProperty.call(attributes, key)) {

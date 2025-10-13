@@ -9,7 +9,7 @@ export const define = (fn: FnComponentType) => {
 
   if (!fn.selector) return;
 
-  const webComponent = class extends HTMLElement implements ComponentInterface {
+  const webComponent = class extends (fn.extends || HTMLElement) implements ComponentInterface {
     private directives: FnDirectiveType[] = fn.directives || [];
     private watchers: WatcherInterface[] = [];
     private conditionalWatchers: WatcherInterface[] = [];
@@ -212,6 +212,6 @@ export const define = (fn: FnComponentType) => {
   if (!fn.defined) {
     fn.defined = true;
     if (customElements.get(fn.selector)) return;
-    customElements.define(fn.selector, webComponent);
+    customElements.define(fn.selector, webComponent, { extends: fn.localName || undefined });
   }
 };

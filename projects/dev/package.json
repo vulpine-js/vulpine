@@ -1,6 +1,6 @@
 {
   "name": "vulpine-dev",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "license": "MIT",
 
   "main": "dist/cjs/index.js",

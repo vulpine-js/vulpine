@@ -34,7 +34,12 @@ module.exports = function ({ types: t }) {
     if (children.length > 0) {
       path.node.arguments.push({
         type: "ArrayExpression",
-        elements: children.map((child) => {
+        elements: children.filter(child => {
+          if (child.type === 'JSXExpressionContainer' && child.expression.type === 'JSXEmptyExpression') {
+            return false;
+          }
+          return true;
+        }).map((child) => {
           if (child.type === "JSXExpressionContainer") {
             return handleExpressionContainerChild(child);
           }

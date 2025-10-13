@@ -7,6 +7,8 @@ interface FnComponentIncompleteInterface extends FnComponentIncompleteType {
   defined?: boolean;
   directives?: FnDirectiveType[];
   observedAttrs?: string[];
+  extends?: CustomElementConstructor;
+  localName?: keyof HTMLElementTagNameMap;
 }
 
 export type FnComponentType = FnComponentIncompleteInterface;
