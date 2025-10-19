@@ -1,4 +1,4 @@
-import { normalizePath } from "./normalize-path";
+import { normalizePath } from './normalize-path';
 
 export const evaluateRoute = (browserPath: string, routePath: string, exact: boolean = false) => {
   browserPath = normalizePath(browserPath);
@@ -46,4 +46,4 @@ export const evaluateRoute = (browserPath: string, routePath: string, exact: boo
     shouldDeactivate: !match,
     routeParams: match ? params : {},
   };
-}
+};

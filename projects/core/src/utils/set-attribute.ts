@@ -13,13 +13,15 @@ const propertyMap: Record<string, string> = {
   autoplay: 'autoplay',
   for: 'htmlFor',
   width: 'width',
-  height: 'height'
+  height: 'height',
 };
 
 export const setAttribute = (element: Element, key: string, value: string) => {
   const k = key.toLowerCase();
   if (propertyMap[k]) {
-    (element as any)[propertyMap[k]] = value;
+    // assign to known property on HTMLElement when available
+    const el = element as HTMLElement & Record<string, unknown>;
+    el[propertyMap[k]] = value as unknown;
   } else {
     element.setAttribute(key, value);
   }

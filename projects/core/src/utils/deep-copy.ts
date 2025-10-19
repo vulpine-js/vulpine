@@ -9,20 +9,20 @@ export function deepCopy<T>(value: T): T {
 
   // Handle Date separately
   if (value instanceof Date) {
-    return new Date(value.getTime()) as any;
+    return new Date(value.getTime()) as unknown as T;
   }
 
   // Handle Array
   if (Array.isArray(value)) {
     const copy = value.map((item) => deepCopy(item));
-    return copy as any;
+    return copy as unknown as T;
   }
 
   // Handle plain Object
-  const copy: Record<string, any> = {};
-  for (const [key, val] of Object.entries(value)) {
-    copy[key] = deepCopy(val);
+  const copy: Record<string, unknown> = {};
+  for (const [key, val] of Object.entries(value as Record<string, unknown>)) {
+    copy[key] = deepCopy(val as unknown);
   }
 
-  return copy as T;
+  return copy as unknown as T;
 }

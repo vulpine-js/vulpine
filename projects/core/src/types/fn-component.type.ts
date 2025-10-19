@@ -1,6 +1,8 @@
-import { FnDirectiveType } from "./fn-directive.type";
+import { FnDirectiveType } from './fn-directive.type';
 
-type FnComponentIncompleteType = (props: any) => any;
+type FnComponentIncompleteType = (
+  props: Record<string, unknown>,
+) => HTMLElement | DocumentFragment | Element;
 
 interface FnComponentIncompleteInterface extends FnComponentIncompleteType {
   selector?: string;

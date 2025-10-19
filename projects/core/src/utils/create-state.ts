@@ -1,10 +1,13 @@
-import { ComponentInterface } from "../interfaces/component.interface";
-import { StateInterface } from "../interfaces/state.interface";
+import { ComponentInterface } from '../interfaces/component.interface';
+import { StateInterface } from '../interfaces/state.interface';
 
-export const createState = <T = any>(componentInstance: any, value: T): StateInterface<T> => {
-  const component = componentInstance as ComponentInterface;
-  const state = {};
-  let savedValue: any = value;
+export const createState = <T = unknown>(
+  componentInstance: ComponentInterface,
+  value: T,
+): StateInterface<T> => {
+  const component = componentInstance;
+  const state: Partial<StateInterface<T>> = {};
+  let savedValue: T = value;
 
   Object.defineProperty(state, 'value', {
     get() {
@@ -16,7 +19,9 @@ export const createState = <T = any>(componentInstance: any, value: T): StateInt
         component.detectChanges();
       }
     },
+    enumerable: true,
+    configurable: true,
   });
 
-  return state as any;
+  return state as StateInterface<T>;
 };

@@ -1,6 +1,6 @@
-import { ComponentInterface } from "../interfaces/component.interface";
+import { ComponentInterface } from '../interfaces/component.interface';
 
-export const connected = (componentInstance: any, callback: () => void) => {
-  const component = componentInstance as ComponentInterface;
+export const connected = (componentInstance: ComponentInterface, callback: () => void) => {
+  const component = componentInstance;
   component.addConnectedHook(callback);
 };

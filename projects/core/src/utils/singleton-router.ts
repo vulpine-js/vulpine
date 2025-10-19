@@ -1,15 +1,17 @@
-import { GuardInterface } from "../interfaces/guard.interface";
-import { NavigateOptionsInterface } from "../interfaces/navigation-options.interface";
-import { SavedRouteInterface } from "../interfaces/saved-route.interface";
-import { evaluateRoute } from "./evaluate-route";
-import { normalizePath } from "./normalize-path";
-import { vulpineValidationΘ } from "./vulpine-validation";
+import { GuardInterface } from '../interfaces/guard.interface';
+import { NavigateOptionsInterface } from '../interfaces/navigation-options.interface';
+import { SavedRouteInterface } from '../interfaces/saved-route.interface';
+import { evaluateRoute } from './evaluate-route';
+import { normalizePath } from './normalize-path';
+import { vulpineValidationΘ } from './vulpine-validation';
 
 export class SingletonRouter {
-
   public static instance: SingletonRouter;
   public isRedirectingFromGuard: boolean = false;
-  public guardRedirectUrls: { path: string; options: NavigateOptionsInterface; }[] = [];
+  public guardRedirectUrls: {
+    path: string;
+    options: NavigateOptionsInterface;
+  }[] = [];
   public currentRoute = this.getBrowserRoute();
 
   private savedRoutes: SavedRouteInterface[] = [];
@@ -31,38 +33,38 @@ export class SingletonRouter {
     return window.location.href.replace(window.location.origin, '');
   }
 
-  public canActivate(guard: GuardInterface) {
+  public canActivate<T = unknown>(guard: GuardInterface<T>) {
     const currentPath = normalizePath(window.location.pathname);
     const { shouldActivate } = evaluateRoute(currentPath, guard.path);
     this.guards.push({
       ...guard,
       type: 'active',
-      isActive: shouldActivate
-    });
+      isActive: shouldActivate,
+    } as GuardInterface);
   }
 
-  public canDeactivate(guard: GuardInterface) {
+  public canDeactivate<T = unknown>(guard: GuardInterface<T>) {
     const currentPath = normalizePath(window.location.pathname);
     const { shouldActivate } = evaluateRoute(currentPath, guard.path);
     this.guards.push({
       ...guard,
       type: 'deactivate',
-      isActive: shouldActivate
-    });
+      isActive: shouldActivate,
+    } as GuardInterface);
   }
 
   public saveRoute(route: SavedRouteInterface) {
     this.savedRoutes.push(route);
   }
 
-  public addSubscription(subscription: { isConnected: () => boolean; callback: () => void; }) {
+  public addSubscription(subscription: { isConnected: () => boolean; callback: () => void }) {
     this.subscriptions.push(subscription);
   }
 
   private evaluate(savedRoutes: SavedRouteInterface[], newPath: string) {
     const toActivate: (() => void)[] = [];
     const toDeactivate: (() => void)[] = [];
-    savedRoutes.forEach(route => {
+    savedRoutes.forEach((route) => {
       const result = evaluateRoute(newPath, route.pathCaller());
       if (route.isActivated && result.shouldDeactivate) {
         toDeactivate.push(() => {
@@ -87,21 +89,24 @@ export class SingletonRouter {
     };
   }
 
-  private setRouterParams(element: Element | null, params: any) {
-    if (element && 'addMetaData' in element && typeof element.addMetaData === 'function') {
-      element.addMetaData({
-        router: {
-          params
-        }
-      });
+  private setRouterParams(element: Element | null, params: Record<string, unknown>) {
+    if (!element) return;
+
+    // Only call addMetaData on elements that implement the Component-like API
+    interface CompLike {
+      addMetaData?: (data: Record<string, unknown>) => void;
+    }
+    const maybeComp = element as unknown as CompLike;
+    if (typeof maybeComp.addMetaData === 'function') {
+      maybeComp.addMetaData({ router: { params } });
     }
   }
 
   public async runEvaluate(routes: SavedRouteInterface[], path: string) {
     const { toDeactivate, toActivate } = this.evaluate(routes, path);
 
-    toDeactivate.forEach(deactivate => deactivate());
-    toActivate.forEach(activate => activate());
+    toDeactivate.forEach((deactivate) => deactivate());
+    toActivate.forEach((activate) => activate());
   }
 
   private async evaluateGuards(path: string): Promise<boolean> {
@@ -113,7 +118,7 @@ export class SingletonRouter {
       if (guard.type === 'deactivate') {
         const { shouldDeactivate, shouldActivate, routeParams } = evaluateRoute(path, guard.path);
         if (shouldDeactivate && guard.isActive && !prevent) {
-          let data: any;
+          let data: unknown;
           if (guard.resolve) {
             data = await guard.resolve();
           }
@@ -145,7 +150,7 @@ export class SingletonRouter {
       if (guard.type === 'active') {
         const { shouldActivate, routeParams } = evaluateRoute(path, guard.path);
         if (shouldActivate && !guard.isActive && !prevent) {
-          let data: any;
+          let data: unknown;
           if (guard.resolve) {
             data = await guard.resolve();
           }
@@ -177,7 +182,7 @@ export class SingletonRouter {
     if (this.isRedirectingFromGuard) {
       this.guardRedirectUrls.push({
         path,
-        options
+        options,
       });
       return;
     }
@@ -201,14 +206,14 @@ export class SingletonRouter {
 
     await this.runEvaluate(this.savedRoutes, normalizePath(newPath, true));
 
-    this.subscriptions.forEach(subscription => {
+    this.subscriptions.forEach((subscription) => {
       if (subscription.isConnected()) {
         subscription.callback();
       }
     });
 
-    this.subscriptions = this.subscriptions.filter(subscription => subscription.isConnected());
-    this.savedRoutes = this.savedRoutes.filter(route => route.commentElement.isConnected);
+    this.subscriptions = this.subscriptions.filter((subscription) => subscription.isConnected());
+    this.savedRoutes = this.savedRoutes.filter((route) => route.commentElement.isConnected);
 
     this.guardRedirectUrls = [];
 
@@ -219,5 +224,4 @@ export class SingletonRouter {
       history.pushState(state, '', newPath);
     }
   }
-
 }

@@ -1,7 +1,23 @@
-function createElementByTagName(tagName: string, is: string): HTMLElement | SVGElement | MathMLElement {
+function createElementByTagName(
+  tagName: string,
+  is: string,
+): HTMLElement | SVGElement | MathMLElement {
   const svgTags = new Set([
-    'svg', 'circle', 'rect', 'path', 'line', 'polygon', 'polyline',
-    'ellipse', 'g', 'defs', 'clipPath', 'use', 'text', 'tspan', 'foreignObject'
+    'svg',
+    'circle',
+    'rect',
+    'path',
+    'line',
+    'polygon',
+    'polyline',
+    'ellipse',
+    'g',
+    'defs',
+    'clipPath',
+    'use',
+    'text',
+    'tspan',
+    'foreignObject',
   ]);
 
   const mathTags = new Set(['math', 'mrow', 'mi', 'mo', 'mn', 'msup', 'msub', 'mfrac']);
@@ -22,7 +38,11 @@ function createElementByTagName(tagName: string, is: string): HTMLElement | SVGE
   return document.createElement(tagName);
 }
 
-export const createElement = (type: string, attributes: Record<string, string> = {}, children: (Element | Text)[] = []): HTMLElement => {
+export const createElement = (
+  type: string,
+  attributes: Record<string, string> = {},
+  children: (Element | Text)[] = [],
+): HTMLElement => {
   const el = createElementByTagName(type, attributes.is);
 
   for (const key in attributes) {

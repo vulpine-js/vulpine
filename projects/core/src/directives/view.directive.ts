@@ -1,23 +1,27 @@
-import { ComponentInterface } from "../interfaces/component.interface";
-import { DirectiveInterface } from "../interfaces/directive.interface";
-import { StateInterface } from "../interfaces/state.interface";
-import { directive } from "./directive";
+import { ComponentInterface } from '../interfaces/component.interface';
+import { DirectiveInterface } from '../interfaces/directive.interface';
+import { StateInterface } from '../interfaces/state.interface';
+import { directive } from './directive';
 
-export const handleModel = (element: Element, valueCaller: DirectiveInterface['valueCaller'], component: ComponentInterface) => {
-  const model: StateInterface = valueCaller();
+export const handleModel = (
+  element: Element,
+  valueCaller: DirectiveInterface['valueCaller'],
+  component: ComponentInterface,
+) => {
+  const model: StateInterface<unknown> = valueCaller() as StateInterface<unknown>;
   component.addWatcher({
     isConnected: () => element.isConnected,
     evaluate: (newValue, oldValue) => newValue !== oldValue,
     update: (newValue) => {
-      switch(element.localName) {
+      switch (element.localName) {
         case 'textarea':
         case 'input':
           const input = element as HTMLInputElement;
-          input.value = newValue;
+          input.value = String((newValue as unknown) ?? '');
           break;
       }
     },
-    valueCaller: () => model.value
+    valueCaller: () => model.value,
   });
 
   switch (element.localName) {
@@ -26,15 +30,26 @@ export const handleModel = (element: Element, valueCaller: DirectiveInterface['v
       element.addEventListener('input', (event) => {
         model.value = (event.target as HTMLInputElement).value;
       });
-    break;
+      break;
   }
 };
 
 const handleRef = (element: Element, directive: DirectiveInterface) => {
-  directive.valueCaller().value = element;
+  const target = directive.valueCaller();
+  if (target && typeof target === 'object') {
+    try {
+      (target as { value?: unknown }).value = element;
+    } catch (e) {
+      // ignore assignment errors
+    }
+  }
 };
 
-export const viewDirective = (element: Element, directives: DirectiveInterface[], componentInstance?: ComponentInterface) => {
+export const viewDirective = (
+  element: Element,
+  directives: DirectiveInterface[],
+  componentInstance?: ComponentInterface,
+) => {
   const component = componentInstance as ComponentInterface;
 
   for (let i = 0; i < directives.length; i++) {
@@ -44,7 +59,7 @@ export const viewDirective = (element: Element, directives: DirectiveInterface[]
         handleModel(element, dir.valueCaller, component);
         break;
       case 'ref':
-        handleRef(element,dir);
+        handleRef(element, dir);
         break;
       default:
         throw new Error(`Directive ${dir.namespace}:${dir.name} is not defined`);

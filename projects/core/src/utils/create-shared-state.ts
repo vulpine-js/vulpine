@@ -1,7 +1,7 @@
-import { ComponentInterface } from "../interfaces/component.interface";
-import { StateInterface } from "../interfaces/state.interface";
+import { ComponentInterface } from '../interfaces/component.interface';
+import { StateInterface } from '../interfaces/state.interface';
 
-export const createSharedState = <T = any>(value: T) => {
+export const createSharedState = <T = unknown>(value: T) => {
   let allPropsComponents: ComponentInterface[] = [];
   const state = {};
   let savedValue: T = value;
@@ -34,16 +34,16 @@ export const createSharedState = <T = any>(value: T) => {
           }
 
           if (hasDisconnected) {
-            allPropsComponents = allPropsComponents.filter(comp => comp.isConnected);
+            allPropsComponents = allPropsComponents.filter((comp) => comp.isConnected);
           }
         }
       }
     },
   });
 
-  return (componentInstance: any): StateInterface<T> => {
+  return (componentInstance: ComponentInterface): StateInterface<T> => {
     allPropsComponents.push(componentInstance);
 
-    return state as any;
+    return state as StateInterface<T>;
   };
 };

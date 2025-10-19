@@ -1,7 +1,7 @@
-export interface WatcherInterface {
-  value?: any;
-  evaluate: (newValue: any, oldValue: any) => boolean; // return true if there are changes
+export interface WatcherInterface<T = unknown> {
+  value?: T;
+  evaluate: (newValue: T, oldValue: T) => boolean; // return true if there are changes
   isConnected: () => boolean;
-  valueCaller: () => any;
-  update: (newValue: any, oldValue: any) => void;
+  valueCaller: () => T;
+  update: (newValue: T, oldValue: T) => void;
 }

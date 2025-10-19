@@ -1,9 +1,20 @@
-import { SavedRouteInterface } from "../interfaces/saved-route.interface";
-import { FnComponentType } from "../types/fn-component.type";
-import { normalizePath } from "./normalize-path";
-import { SingletonRouter } from "./singleton-router";
+import { SavedRouteInterface } from '../interfaces/saved-route.interface';
+import { ComponentInterface } from '../interfaces/component.interface';
+import { FnComponentType } from '../types/fn-component.type';
+import { normalizePath } from './normalize-path';
+import { SingletonRouter } from './singleton-router';
 
-export const viewRoute = (componentInstance: any, fnComponent: FnComponentType, props: Record<string, () => any> = {}) => {
+export const viewRoute = (
+  componentInstance: ComponentInterface,
+  fnComponent: FnComponentType,
+  props: Record<string, () => unknown> & {
+    path: () => string;
+    element: () => Element;
+  } = {
+    path: () => '',
+    element: () => document.createElement('div'),
+  },
+) => {
   const comment = document.createComment(' Route ');
   const fragment = document.createDocumentFragment();
   const router = new SingletonRouter();
@@ -20,7 +31,7 @@ export const viewRoute = (componentInstance: any, fnComponent: FnComponentType, 
 
   router.saveRoute(toSaveRoute);
 
-  router.runEvaluate([toSaveRoute], normalizePath(router.currentRoute, true))
+  router.runEvaluate([toSaveRoute], normalizePath(router.currentRoute, true));
 
   return fragment;
 };

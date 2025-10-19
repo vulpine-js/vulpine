@@ -1,3 +1,3 @@
-export interface StateInterface<T = any> {
+export interface StateInterface<T = unknown> {
   value: T;
 }

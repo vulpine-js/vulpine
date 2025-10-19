@@ -23,6 +23,9 @@
   "scripts": {
     "build": "npm run build:esm && npm run build:cjs",
     "build:esm": "tsc -p tsconfig.esm.json",
-    "build:cjs": "tsc -p tsconfig.cjs.json"
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --ext .ts,.tsx",
+    "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --ext .ts,.tsx --fix"
   }
 }

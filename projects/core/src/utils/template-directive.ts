@@ -1,8 +1,12 @@
-import { ComponentInterface } from "../interfaces/component.interface";
-import { DirectiveInterface } from "../interfaces/directive.interface";
+import { ComponentInterface } from '../interfaces/component.interface';
+import { DirectiveInterface } from '../interfaces/directive.interface';
 
-export const templateDirective = (componentInstance: any, element: Element, directives: DirectiveInterface[]) => {
-  const component = componentInstance as ComponentInterface;
+export const templateDirective = (
+  componentInstance: ComponentInterface,
+  element: Element,
+  directives: DirectiveInterface[],
+) => {
+  const component = componentInstance;
   const grouped: Record<string, DirectiveInterface[]> = {};
   for (let i = 0; i < directives.length; i++) {
     const dir = directives[i];

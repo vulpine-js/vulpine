@@ -1,30 +1,48 @@
-import { ComponentInterface } from "../interfaces/component.interface";
+import { ComponentInterface } from '../interfaces/component.interface';
 
-type ValidatorType<AllFormValues> = (value?: any, formValues?: AllFormValues) => string | null;
+type ValidatorType<AllFormValues> = (value?: unknown, formValues?: AllFormValues) => string | null;
 
-type FormControlType<Value, T> = [Value,  ValidatorType<T>[]?];
+type FormControlType<Value, T> = [Value, ValidatorType<T>[]?];
 
-interface FakeStateInterface<T = any> {
+interface FakeStateInterface<T = unknown> {
   value: T;
   errors: string[];
   hasChanged: boolean;
 }
 
-export const formGroup = <T = any>(componentInstance: any, config: { [K in keyof T]: FormControlType<T[K], T> }) => {
+export const formGroup = <T = Record<string, unknown>>(
+  componentInstance: ComponentInterface,
+  config: { [K in keyof T]: FormControlType<T[K], T> },
+) => {
   const component: ComponentInterface = componentInstance;
 
-  type StatesType = { [K in keyof T]: FakeStateInterface<T[K]>; };
+  type StatesType = { [K in keyof T]: FakeStateInterface<T[K]> };
 
   const keys = Object.keys(config) as (keyof T)[];
-  const states: StatesType = {} as any;
+  const states: StatesType = {} as unknown as StatesType;
 
-  const fakeState = <Value = any>(componentInstance: any, value: Value, name: keyof T, validators: ValidatorType<T>[]): FakeStateInterface<Value> => {
-    const component = componentInstance as ComponentInterface;
-    const state = {
+  const getValues = (): T => {
+    const values = {} as T;
+    const ks = Object.keys(states) as (keyof T)[];
+    for (let i = 0; i < ks.length; i++) {
+      const k: keyof T = ks[i];
+      values[k] = (states[k] as FakeStateInterface<unknown>).value as T[keyof T];
+    }
+    return values;
+  };
+
+  const fakeState = <Value = unknown>(
+    componentInstance: ComponentInterface,
+    value: Value,
+    name: keyof T,
+    validators: ValidatorType<T>[],
+  ): FakeStateInterface<Value> => {
+    const component = componentInstance;
+    const state: Partial<FakeStateInterface<Value>> = {
       errors: [],
       hasChanged: false,
     };
-    let savedValue: any = value;
+    let savedValue: Value = value as Value;
 
     Object.defineProperty(state, 'value', {
       get() {
@@ -33,18 +51,22 @@ export const formGroup = <T = any>(componentInstance: any, config: { [K in keyof
       set(newValue: Value) {
         if (newValue !== savedValue) {
           savedValue = newValue;
-          states[name].hasChanged = true;
+          (states[name] as FakeStateInterface<unknown>).hasChanged = true;
           runValidation<Value>(validators, newValue, name);
           component.detectChanges();
         }
       },
+      enumerable: true,
+      configurable: true,
     });
 
-    return state as any;
+    return state as FakeStateInterface<Value>;
   };
 
   const runValidation = <Value>(validators: ValidatorType<T>[], value: Value, name: keyof T) => {
-    const controlErrors = validators.map(validator => validator(value, (states as any).values)).filter(result => !!result) as string[];
+    const controlErrors = validators
+      .map((validator) => validator(value as unknown, getValues()))
+      .filter((result) => !!result) as string[];
     states[name].errors = controlErrors;
   };
 
@@ -52,27 +74,26 @@ export const formGroup = <T = any>(componentInstance: any, config: { [K in keyof
     const key: keyof T = keys[i];
     const value = config[key][0];
     const validators = config[key][1] || [];
-    states[key] = fakeState(component, value, key, validators);
+    const typedValue = value as unknown as T[typeof key];
+    states[key] = fakeState(component, typedValue, key, validators) as FakeStateInterface<
+      T[typeof key]
+    >;
   }
 
   for (let i = 0; i < keys.length; i++) {
     const key: keyof T = keys[i];
     const value = config[key][0];
     const validators = config[key][1] || [];
-    runValidation(validators, value, key);
+    const typedValue = value as unknown as T[typeof key];
+    runValidation(validators, typedValue, key);
   }
 
   Object.defineProperty(states, 'values', {
     get() {
-      const values: T = {} as any;
-      const keys = Object.keys(states) as (keyof T)[];
-      for (let i = 0; i < keys.length; i++) {
-        const key: keyof T = keys[i];
-        values[key] = states[key].value;
-      }
-      return values;
-    }
+      return getValues();
+    },
+    enumerable: true,
   });
 
-  return states as StatesType & { values: T; };
-}
+  return states as StatesType & { values: T };
+};

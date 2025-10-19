@@ -1,1 +1,1 @@
-export type NavigationStateType = Record<string, any>;
+export type NavigationStateType = Record<string, unknown>;

@@ -1,8 +1,8 @@
-export interface GuardInterface {
+export interface GuardInterface<T = unknown> {
   path: string;
   exact?: boolean;
-  resolve?: () => Promise<any>;
-  guard: (resolvedData?: any, routeParams?: Record<string, any>) => Promise<boolean> | boolean;
+  resolve?: () => Promise<T>;
+  guard: (resolvedData?: T, routeParams?: Record<string, string>) => Promise<boolean> | boolean;
   isActive?: boolean;
-  type?: 'active' | 'deactivate'
+  type?: 'active' | 'deactivate';
 }

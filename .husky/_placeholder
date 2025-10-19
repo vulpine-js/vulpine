@@ -1,0 +1,1 @@
+This folder stores husky hooks. The hooks themselves are executable scripts under .husky/. Use `npm run prepare` to install.
