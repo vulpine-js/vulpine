@@ -1,18 +1,24 @@
-import { SavedRouteInterface } from "../interfaces/saved-route.interface";
-import { FnComponentType } from "../types/fn-component.type";
-import { normalizePath } from "./normalize-path";
-import { SingletonRouter } from "./singleton-router";
+import { SavedRouteInterface } from '../interfaces/saved-route.interface';
+import { FnComponentType } from '../types/fn-component.type';
+import { normalizePath } from './normalize-path';
+import runEvaluate from './run-evaluate';
+import SingletonRouter from './singleton-router';
 
-export const viewRoute = (componentInstance: any, fnComponent: FnComponentType, props: Record<string, () => any> = {}) => {
+const viewRoute = (
+  componentInstance: unknown,
+  fnComponent: FnComponentType,
+  props: Record<string, () => any> = {},
+) => {
   const comment = document.createComment(' Route ');
   const fragment = document.createDocumentFragment();
-  const router = new SingletonRouter();
+  const router = SingletonRouter.getInstance();
 
   fragment.appendChild(comment);
 
   const toSaveRoute: SavedRouteInterface = {
     pathCaller: props.path,
     elementCaller: props.element,
+    exact: props.exact,
     isActivated: false,
     commentElement: comment,
     element: null,
@@ -20,7 +26,9 @@ export const viewRoute = (componentInstance: any, fnComponent: FnComponentType, 
 
   router.saveRoute(toSaveRoute);
 
-  router.runEvaluate([toSaveRoute], normalizePath(router.currentRoute, true))
+  runEvaluate([toSaveRoute], normalizePath(router.currentRoute, true));
 
   return fragment;
 };
+
+export default viewRoute;

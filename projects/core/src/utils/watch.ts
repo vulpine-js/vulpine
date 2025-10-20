@@ -1,6 +1,10 @@
-import { ComponentInterface } from "../interfaces/component.interface";
+import { ComponentInterface } from '../interfaces/component.interface';
 
-export const watch = <T = any>(componentInstance: any, valueCaller: () => T, callback: (newValue: T, oldValue: T) => void) => {
+const watch = <T = any>(
+  componentInstance: any,
+  valueCaller: () => T,
+  callback: (newValue: T, oldValue: T) => void,
+) => {
   const component: ComponentInterface = componentInstance;
   component.addWatcher({
     isConnected: () => component.isConnected,
@@ -11,3 +15,5 @@ export const watch = <T = any>(componentInstance: any, valueCaller: () => T, cal
     },
   });
 };
+
+export default watch;

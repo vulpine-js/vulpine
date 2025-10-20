@@ -1,19 +1,23 @@
-import { DirectiveInterface } from "../interfaces/directive.interface";
-import { ComponentInterface } from "../interfaces/component.interface";
-import { directive } from "./directive";
-import { vulpineValidationΘ } from "../utils/vulpine-validation";
-import { createRouter } from '../utils/create-router';
-import { bindAttribute } from "../utils/bind-attribute";
+import { DirectiveInterface } from '../interfaces/directive.interface';
+import { ComponentInterface } from '../interfaces/component.interface';
+import { directive } from './directive';
+import { vulpineValidationΘ } from '../utils/vulpine-validation';
+import createRouter from '../utils/create-router';
+import { bindAttribute } from '../utils/bind-attribute';
 
-export const routerDirective = (element: Element, directives: DirectiveInterface[], componentInstance?: ComponentInterface) => {
+const routerDirective = (
+  element: Element,
+  directives: DirectiveInterface[],
+  componentInstance?: ComponentInterface,
+) => {
   const component = componentInstance as ComponentInterface;
   const router = createRouter();
 
-  for (let i = 0; i < directives.length; i++) {
+  for (let i = 0; i < directives.length; i += 1) {
     const dir = directives[i];
     switch (dir.name) {
       case 'link':
-        element.addEventListener('click', event => {
+        element.addEventListener('click', (event) => {
           event.preventDefault();
           router.navigate(dir.valueCaller());
         });
@@ -33,3 +37,5 @@ export const routerDirective = (element: Element, directives: DirectiveInterface
 };
 
 directive(routerDirective, 'router');
+
+export default routerDirective;

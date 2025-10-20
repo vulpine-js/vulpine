@@ -1,7 +1,11 @@
-import { ComponentInterface } from "../interfaces/component.interface";
-import { WatcherInterface } from "../interfaces/watcher.interface";
+import { ComponentInterface } from '../interfaces/component.interface';
+import { WatcherInterface } from '../interfaces/watcher.interface';
 
-export const ifCondition = (componentInstance: any, elementCaller: () => Element, valueCaller: () => any) => {
+const ifCondition = (
+  componentInstance: any,
+  elementCaller: () => Element,
+  valueCaller: () => any,
+) => {
   const component: ComponentInterface = componentInstance;
   const fragment = document.createDocumentFragment();
   const comment = document.createComment(' IF ');
@@ -27,8 +31,10 @@ export const ifCondition = (componentInstance: any, elementCaller: () => Element
   component.addWatcher(watcher, true);
 
   if (component.initialChangeDetectionDone || component.initialChangeDetectionRunning) {
-    component.runWatcher(watcher)
+    component.runWatcher(watcher);
   }
 
   return fragment;
 };
+
+export default ifCondition;

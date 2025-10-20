@@ -1,8 +1,8 @@
-import { normalizePath } from "./normalize-path";
+import { normalizePath } from './normalize-path';
 
-export const evaluateRoute = (browserPath: string, routePath: string, exact: boolean = false) => {
-  browserPath = normalizePath(browserPath);
-  routePath = normalizePath(routePath);
+const evaluateRoute = (browserPathInput: string, routePathInput: string, exact: boolean) => {
+  const browserPath = normalizePath(browserPathInput);
+  const routePath = normalizePath(routePathInput);
 
   const browserSegments = browserPath.split('/').filter(Boolean);
   const routeSegments = routePath.split('/').filter(Boolean);
@@ -26,7 +26,7 @@ export const evaluateRoute = (browserPath: string, routePath: string, exact: boo
   const params: Record<string, string> = {};
   let match = true;
 
-  for (let i = 0; i < routeSegments.length; i++) {
+  for (let i = 0; i < routeSegments.length; i += 1) {
     const routeSegment = routeSegments[i];
     const browserSegment = browserSegments[i];
 
@@ -46,4 +46,6 @@ export const evaluateRoute = (browserPath: string, routePath: string, exact: boo
     shouldDeactivate: !match,
     routeParams: match ? params : {},
   };
-}
+};
+
+export default evaluateRoute;

@@ -1,8 +1,8 @@
-import { ComponentInterface } from "../interfaces/component.interface";
-import { GuardInterface } from "../interfaces/guard.interface";
-import { NavigateOptionsInterface } from "../interfaces/navigation-options.interface";
-import { SingletonRouter } from "./singleton-router";
-import { vulpineValidationΘ } from "./vulpine-validation";
+import { ComponentInterface } from '../interfaces/component.interface';
+import { GuardInterface } from '../interfaces/guard.interface';
+import { NavigateOptionsInterface } from '../interfaces/navigation-options.interface';
+import SingletonRouter from './singleton-router';
+import { vulpineValidationΘ } from './vulpine-validation';
 
 interface RouterInterface {
   navigate: (path: string, options?: NavigateOptionsInterface) => void;
@@ -12,17 +12,19 @@ interface RouterInterface {
   canDeactivate: (guard: GuardInterface) => void;
 }
 
-export function createRouter(componentInstance?: any) {
-  const component: ComponentInterface = componentInstance;
-  const routerCls = new SingletonRouter();
-  const router: RouterInterface = {} as any;
+const createRouter = (componentInstance?: unknown) => {
+  const component = componentInstance as ComponentInterface;
+  const routerCls = SingletonRouter.getInstance();
+  const router: RouterInterface = {} as unknown as RouterInterface;
   router.navigate = routerCls.navigate.bind(routerCls);
   router.canActivate = routerCls.canActivate.bind(routerCls);
   router.canDeactivate = routerCls.canDeactivate.bind(routerCls);
   router.onRouteChange = (callback: () => void) => {
     vulpineValidationΘ(() => {
       if (!component) {
-        throw new Error('Component instance should be passed to the createRouter function to subscribe to route change event. Ex. createRouter(this)');
+        throw new Error(
+          'Component instance should be passed to the createRouter function to subscribe to route change event. Ex. createRouter(this)',
+        );
       }
     });
     routerCls.addSubscription({
@@ -35,12 +37,16 @@ export function createRouter(componentInstance?: any) {
     get() {
       vulpineValidationΘ(() => {
         if (!component) {
-          throw new Error('Component instance should be passed to the createRouter function to get params. Ex. createRouter(this)');
+          throw new Error(
+            'Component instance should be passed to the createRouter function to get params. Ex. createRouter(this)',
+          );
         }
       });
       return component.getMetaData('router')?.params || {};
-    }
-  })
+    },
+  });
 
   return router;
-}
+};
+
+export default createRouter;

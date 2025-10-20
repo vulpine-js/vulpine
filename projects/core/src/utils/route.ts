@@ -1,8 +1,11 @@
 interface Props {
   path: string;
   element: HTMLElement;
+  exact?: boolean;
 }
 
-export function Route(props: Props) {
+function Route(props: Props) {
   return props;
 }
+
+export default Route;

@@ -1,17 +1,23 @@
-import { ComponentInterface } from "../interfaces/component.interface";
-import { DirectiveInterface } from "../interfaces/directive.interface";
-import { directive } from "./directive";
-import { handleModel } from "./view.directive";
+import { ComponentInterface } from '../interfaces/component.interface';
+import { DirectiveInterface } from '../interfaces/directive.interface';
+import handleViewModel from '../utils/handle-view-model';
+import { directive } from './directive';
 
-export const formDirective = (element: Element, directives: DirectiveInterface[], componentInstance?: ComponentInterface) => {
+const formDirective = (
+  element: Element,
+  directives: DirectiveInterface[],
+  componentInstance?: ComponentInterface,
+) => {
   const component = componentInstance as ComponentInterface;
 
-  for (let i = 0; i < directives.length; i++) {
+  for (let i = 0; i < directives.length; i += 1) {
     const dir = directives[i];
 
-    switch(dir.name) {
+    switch (dir.name) {
       case 'control':
-        handleModel(element, dir.valueCaller, component);
+        handleViewModel(element, dir.valueCaller, component);
+        break;
+      default:
         break;
     }
   }
@@ -20,3 +26,5 @@ export const formDirective = (element: Element, directives: DirectiveInterface[]
 };
 
 directive(formDirective, 'form');
+
+export default formDirective;

@@ -1,26 +1,39 @@
-import { ComponentInterface } from "../interfaces/component.interface";
-import { StateInterface } from "../interfaces/state.interface";
-import { WatcherInterface } from "../interfaces/watcher.interface";
-import { FnComponentType } from "../types/fn-component.type";
-import { FnDirectiveType } from "../types/fn-directive.type";
-import { defaultDirectives } from "./default-directives";
+import { ComponentInterface } from '../interfaces/component.interface';
+import { StateInterface } from '../interfaces/state.interface';
+import { WatcherInterface } from '../interfaces/watcher.interface';
+import { FnComponentType } from '../types/fn-component.type';
+import { FnDirectiveType } from '../types/fn-directive.type';
+import defaultDirectives from './default-directives';
+import runWatcher from './run-watcher';
 
-export const define = (fn: FnComponentType) => {
-
+const define = (fnInput: FnComponentType) => {
+  const fn = fnInput;
   if (!fn.selector) return;
 
   const webComponent = class extends (fn.extends || HTMLElement) implements ComponentInterface {
     private directives: FnDirectiveType[] = fn.directives || [];
+
     private watchers: WatcherInterface[] = [];
+
     private conditionalWatchers: WatcherInterface[] = [];
+
     private runChangeDetection: boolean = true;
+
     private connectedHooks: (() => void)[] = [];
+
     private disconnectedHooks: (() => void)[] = [];
+
     private childComponents: ComponentInterface[] = [];
+
     private readonly element: HTMLElement;
+
     private metaData: Record<string, any> = {};
+
     public initialChangeDetectionRunning: boolean = false;
+
     public initialChangeDetectionDone: boolean = false;
+
+    public runWatcher = runWatcher;
 
     constructor(props: Record<string, StateInterface>) {
       super();
@@ -36,29 +49,34 @@ export const define = (fn: FnComponentType) => {
       this.runDetectChanges();
       this.initialChangeDetectionRunning = false;
       this.initialChangeDetectionDone = true;
-      this.afterViewInit();
+      /**
+       * Todo: add after view init hook in here
+       */
     }
 
     disconnectedCallback() {
       this.disconnected();
     }
 
-
     /**
      * Observed attributes =================================================
      */
     private observedAttrs: {
-      name: string | null,
-      callback?: (newVal: any, oldVal: any) => void,
-      callbackAll?: (attrName: string, newVal: any, oldVal: any) => void,
-      transformer?: ((value: any) => any) | null
+      name: string | null;
+      callback?: (newVal: any, oldVal: any) => void;
+      callbackAll?: (attrName: string, newVal: any, oldVal: any) => void;
+      transformer?: ((value: any) => any) | null;
     }[] = [];
 
-    public addObservedAttr(name: string | null, callback: (newVal: any, oldVal: any) => void, transformer: ((value: string) => any) | null) {
+    public addObservedAttr(
+      name: string | null,
+      callback: (newVal: any, oldVal: any) => void,
+      transformer: ((value: string) => any) | null,
+    ) {
       this.observedAttrs.push({
         name,
         callback,
-        transformer
+        transformer,
       });
     }
 
@@ -66,7 +84,7 @@ export const define = (fn: FnComponentType) => {
       this.observedAttrs.push({
         name: null,
         callbackAll: callback,
-        transformer: null
+        transformer: null,
       });
     }
 
@@ -77,7 +95,7 @@ export const define = (fn: FnComponentType) => {
     attributeChangedCallback(attrName: string, oldValue: string, newValue: string) {
       if (!this.observedAttrs.length) return;
 
-      for (let i = 0; i < this.observedAttrs.length; i++) {
+      for (let i = 0; i < this.observedAttrs.length; i += 1) {
         const { name, callback, callbackAll, transformer } = this.observedAttrs[i];
         if (name === attrName || name === null) {
           let newValueHolder = newValue;
@@ -100,7 +118,6 @@ export const define = (fn: FnComponentType) => {
      * [end] Observed attributes =================================================
      */
 
-
     public getMetaData(key: string) {
       return this.metaData[key];
     }
@@ -108,15 +125,12 @@ export const define = (fn: FnComponentType) => {
     public addMetaData(data: Record<string, any>) {
       this.metaData = {
         ...this.metaData,
-        ...data
+        ...data,
       };
     }
 
     private applyDefaultDirectives() {
-      this.directives = [
-        ...this.directives,
-        ...defaultDirectives,
-      ];
+      this.directives = [...this.directives, ...defaultDirectives];
     }
 
     public addChild(component: ComponentInterface) {
@@ -124,7 +138,7 @@ export const define = (fn: FnComponentType) => {
     }
 
     public getDirective(namespace: string) {
-      return this.directives.find(dir => dir.namespace === namespace);
+      return this.directives.find((dir) => dir.namespace === namespace);
     }
 
     public addDisconnectedHook(callback: () => void) {
@@ -137,16 +151,13 @@ export const define = (fn: FnComponentType) => {
 
     // HOOK
     private connected() {
-      this.connectedHooks.forEach(hook => hook());
+      this.connectedHooks.forEach((hook) => hook());
     }
 
     // HOOK
     private disconnected() {
-      this.disconnectedHooks.forEach(hook => hook());
+      this.disconnectedHooks.forEach((hook) => hook());
     }
-
-    // HOOK
-    private afterViewInit() {}
 
     // HOOK
     private beforeChangeDetection() {
@@ -174,28 +185,21 @@ export const define = (fn: FnComponentType) => {
       }
     }
 
-    public runWatcher(watcher: WatcherInterface) {
-      const oldValue = watcher.value;
-      const newValue = watcher.valueCaller();
-      if (watcher.evaluate(newValue, oldValue)) {
-        watcher.update(newValue, oldValue);
-        watcher.value = newValue;
-      }
-    }
-
     private runDetectChanges() {
-      [...this.conditionalWatchers].reverse().forEach(watcher => this.runWatcher(watcher));
-      this.watchers.forEach(watcher => this.runWatcher(watcher));
+      [...this.conditionalWatchers].reverse().forEach((watcher) => this.runWatcher(watcher));
+      this.watchers.forEach((watcher) => this.runWatcher(watcher));
 
-      this.childComponents.forEach(child => child.detectChanges());
-      this.childComponents = this.childComponents.filter(child => child.isConnected);
+      this.childComponents.forEach((child) => child.detectChanges());
+      this.childComponents = this.childComponents.filter((child) => child.isConnected);
 
       this.removeUnusedWatchers();
     }
 
     private removeUnusedWatchers() {
-      this.watchers = this.watchers.filter(watcher => watcher.isConnected());
-      this.conditionalWatchers = this.conditionalWatchers.filter(watcher => watcher.isConnected());
+      this.watchers = this.watchers.filter((watcher) => watcher.isConnected());
+      this.conditionalWatchers = this.conditionalWatchers.filter((watcher) =>
+        watcher.isConnected(),
+      );
     }
 
     public detectChanges() {
@@ -215,3 +219,5 @@ export const define = (fn: FnComponentType) => {
     customElements.define(fn.selector, webComponent, { extends: fn.localName || undefined });
   }
 };
+
+export default define;
