@@ -3,6 +3,7 @@ import { StateInterface } from '../interfaces/state.interface';
 import { WatcherInterface } from '../interfaces/watcher.interface';
 import { FnComponentType } from '../types/fn-component.type';
 import { FnDirectiveType } from '../types/fn-directive.type';
+import { HooksInterface } from '../interfaces/hooks.interface';
 import defaultDirectives from './default-directives';
 import runWatcher from './run-watcher';
 
@@ -19,9 +20,17 @@ const define = (fnInput: FnComponentType) => {
 
     private runChangeDetection: boolean = true;
 
-    private connectedHooks: (() => void)[] = [];
+    private isAfterChangeDetectionRunning: boolean = false;
 
-    private disconnectedHooks: (() => void)[] = [];
+    private hooks: HooksInterface = {
+      connected: [],
+      disconnected: [],
+      beforeChangeDetection: [],
+      afterChangeDetection: [],
+      afterViewInit: [],
+      attributeChanged: [],
+      adopted: [],
+    };
 
     private childComponents: ComponentInterface[] = [];
 
@@ -43,19 +52,17 @@ const define = (fnInput: FnComponentType) => {
     }
 
     connectedCallback() {
-      this.connected();
+      this.runHooks('connected');
       this.appendChild(this.element);
       this.initialChangeDetectionRunning = true;
       this.runDetectChanges();
       this.initialChangeDetectionRunning = false;
       this.initialChangeDetectionDone = true;
-      /**
-       * Todo: add after view init hook in here
-       */
+      this.runHooks('afterViewInit');
     }
 
     disconnectedCallback() {
-      this.disconnected();
+      this.runHooks('disconnected');
     }
 
     /**
@@ -93,7 +100,9 @@ const define = (fnInput: FnComponentType) => {
     }
 
     attributeChangedCallback(attrName: string, oldValue: string, newValue: string) {
-      if (!this.observedAttrs.length) return;
+      this.runHooks('afterViewInit', attrName, oldValue, newValue);
+
+      if (this.observedAttrs.length) return;
 
       for (let i = 0; i < this.observedAttrs.length; i += 1) {
         const { name, callback, callbackAll, transformer } = this.observedAttrs[i];
@@ -118,6 +127,10 @@ const define = (fnInput: FnComponentType) => {
      * [end] Observed attributes =================================================
      */
 
+    public adoptedCallback() {
+      this.runHooks('adopted');
+    }
+
     public getMetaData(key: string) {
       return this.metaData[key];
     }
@@ -141,40 +154,37 @@ const define = (fnInput: FnComponentType) => {
       return this.directives.find((dir) => dir.namespace === namespace);
     }
 
-    public addDisconnectedHook(callback: () => void) {
-      this.disconnectedHooks.push(callback);
+    public addHook(hookName: keyof HooksInterface, callback: () => void) {
+      this.hooks[hookName].push(callback);
     }
 
-    public addConnectedHook(callback: () => void) {
-      this.connectedHooks.push(callback);
-    }
-
-    // HOOK
-    private connected() {
-      this.connectedHooks.forEach((hook) => hook());
-    }
-
-    // HOOK
-    private disconnected() {
-      this.disconnectedHooks.forEach((hook) => hook());
+    private runHooks(hookName: keyof HooksInterface, ...attrs: string[]) {
+      if (hookName === 'attributeChanged') {
+        this.hooks[hookName].forEach((hook) => hook(...attrs));
+      } else {
+        this.hooks[hookName].forEach((hook) => hook());
+      }
     }
 
     // HOOK
     private beforeChangeDetection() {
+      if (this.isAfterChangeDetectionRunning) return;
       this.runChangeDetection = false;
 
-      // run beforeChangeDetection hooks in here
+      this.runHooks('beforeChangeDetection');
 
       this.runChangeDetection = true;
     }
 
     // HOOK
     private afterChangeDetection() {
-      this.runChangeDetection = false;
+      if (this.isAfterChangeDetectionRunning) return;
 
-      // run afterChangeDetection hooks in here
+      this.isAfterChangeDetectionRunning = true;
 
-      this.runChangeDetection = true;
+      this.runHooks('afterChangeDetection');
+
+      this.isAfterChangeDetectionRunning = false;
     }
 
     public addWatcher(watcher: WatcherInterface, isConditional: boolean = false) {

@@ -1,4 +1,18 @@
 /**
+ * Hooks ==========================================================
+ */
+export { default as connected } from './hooks/connected';
+export { default as disconnected } from './hooks/disconnected';
+export { default as afterViewInit } from './hooks/after-view-init';
+export { default as beforeChangeDetection } from './hooks/before-change-detection';
+export { default as afterChangeDetection } from './hooks/after-change-detection';
+export { default as attributeChanged } from './hooks/attribute-changed';
+export { default as adopted } from './hooks/adopted';
+/**
+ * [end] Hooks ====================================================
+ */
+
+/**
  * Custom elements ================================================
  */
 export { customElement } from './custom-element/custom-element';
